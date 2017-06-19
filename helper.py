@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import config
+import busses
+
 def get_message_type(msg):
     if msg.text is not None:
         return "text"
@@ -29,3 +32,19 @@ def get_message_type(msg):
 def get_distance(coord_tuple, coord_dict):
     #Pythagoras
     return (coord_tuple[0] - coord_dict["latitude"]) ** 2 + (coord_tuple[1] - coord_dict["longitude"]) ** 2
+
+
+def get_closest_station(location):
+    smallest_distance = 259200
+    for station_pos in config.station_position.keys():
+        distance = get_distance(station_pos, location)
+        if smallest_distance > distance:
+            smallest_distance = distance
+            nearest_station = config.station_position[station_pos]
+    return nearest_station
+
+def get_conversation_status(msg):
+    return busses.conversation_bus[msg.chat.id]["state"]
+
+def set_conversation_status(msg, state):
+    busses.conversation_bus[msg.chat.id]["state"] = state
