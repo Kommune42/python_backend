@@ -1,0 +1,4 @@
+*.pyc
+*.pyo
+.rclint
+secure_conf.py
