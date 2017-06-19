@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+from ext_lib.autocorrect import autocorrect
 import secure_conf
-global token
 
 token = secure_conf.token
-
 
 dynamic_conf_file = open("./conf.conf", "r")
 dynamic_conf = json.load(dynamic_conf_file)
@@ -74,3 +73,7 @@ stations = [
     "Westhafen",
     "Wedding"
 ]
+
+station_correcter = autocorrect.Dictionary()
+for station in stations:
+    station_correcter.learn_word(station)

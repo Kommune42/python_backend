@@ -16,7 +16,13 @@ def command_handler(msg):
 
 def text_handler(msg):
     chat_id = msg.chat.id
+    text = msg.text
     if helper.get_conversation_status(msg) == "whereat":
+        station = config.station_correcter.correct_word(text)
+        if station in config.stations:
+            msg.reply_text(language.conf[config.lang]["hereat"] + station)
+        else:
+            msg.reply_text(language.conf[config.lang]["couldnotfindstation"])
         helper.set_conversation_status(msg, None)
 
 def location_handler(msg):
