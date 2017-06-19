@@ -8,7 +8,9 @@ def get_message_type(msg):
         return "document"
     elif msg.game is not None:
         return "game"
-    elif msg.photo is not None:
+    elif msg.location is not None:
+        return "location"
+    elif msg.photo != []:
         return "photo"
     elif msg.sticker is not None:
         return "sticker"
@@ -20,7 +22,10 @@ def get_message_type(msg):
         return "video_note"
     elif msg.contact is not None:
         return "contact"
-    elif msg.location is not None:
-        return "location"
     else:
         return "unknown"
+
+
+def get_distance(coord_tuple, coord_dict):
+    #Pythagoras
+    return (coord_tuple[0] - coord_dict["latitude"]) ** 2 + (coord_tuple[1] - coord_dict["longitude"]) ** 2
