@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import config
 import busses
 
@@ -45,7 +46,6 @@ def get_closest_station(location):
 
 
 def edits1(word):
-    "All edits that are one edit away from `word`."
     letters    =  "/ABCFGHIJLMNOPSTWabcdefghiklmnoprstuwzßöü"
     splits     = [(word[:i], word[i:])    for i in range(len(word) + 1)]
     deletes    = [L + R[1:]               for L, R in splits if R]
@@ -53,7 +53,6 @@ def edits1(word):
     replaces   = [L + c + R[1:]           for L, R in splits if R for c in letters]
     inserts    = [L + c + R               for L, R in splits for c in letters]
     return set(deletes + transposes + replaces + inserts)
-
 
 def amount_common_char(str1, str2):
     str1 = set(str1)
@@ -102,8 +101,11 @@ def get_conversation_status(msg):
 
 def is_conversation_status(state, msg):
     #Check if users conversation status has given state
-    return (msg.from_user.id == busses.conversation_bus[msg.chat.id]["user"]
-            and busses.conversation_bus[msg.chat.id]["state"] == state)
+    if busses.conversation_bus[msg.chat.id]["state"] is None:
+        return state is None
+    else:
+        return (msg.from_user.id == busses.conversation_bus[msg.chat.id]["user"]
+                and busses.conversation_bus[msg.chat.id]["state"] == state)
 
 def set_conversation_status(msg, state):
     busses.conversation_bus[msg.chat.id]["user"] = msg.from_user.id

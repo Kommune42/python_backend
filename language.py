@@ -18,4 +18,4 @@ conf = {
 }
 
 def get_locale(key):
-    conf[config.lang][key]
+    return conf[config.lang][key]

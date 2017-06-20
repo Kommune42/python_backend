@@ -11,7 +11,7 @@ saufi = telegram.Bot(token=config.token)
 listener.update_queue(saufi)
 
 
-for _ in range(500):
+for _ in range(500000):
     for update in busses.new_updates:
         #Some updates do not have a message
         if update.message is not None:
@@ -19,7 +19,7 @@ for _ in range(500):
             msg_type = helper.get_message_type(msg)
 
             if not msg.chat.id in busses.conversation_bus:
-                busses.conversation_bus[msg.chat.id] = {"state": None}
+                busses.conversation_bus[msg.chat.id] = {"state": None, "user": 0}
 
             if msg_type == "location":
                 response_engine.location_handler(msg)
