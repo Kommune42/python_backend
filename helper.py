@@ -43,8 +43,59 @@ def get_closest_station(location):
             nearest_station = config.station_position[station_pos]
     return nearest_station
 
+
+def edits1(word):
+    "All edits that are one edit away from `word`."
+    letters    =  "/ABCFGHIJLMNOPSTWabcdefghiklmnoprstuwzßöü"
+    splits     = [(word[:i], word[i:])    for i in range(len(word) + 1)]
+    deletes    = [L + R[1:]               for L, R in splits if R]
+    transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R)>1]
+    replaces   = [L + c + R[1:]           for L, R in splits if R for c in letters]
+    inserts    = [L + c + R               for L, R in splits for c in letters]
+    return set(deletes + transposes + replaces + inserts)
+
+
+def amount_common_char(str1, str2):
+    str1 = set(str1)
+    str2 = set(str2)
+    return len(str1.intersection(str2))
+
+def clostest_levenshtein_station(test_str):
+    #19 is highest possible value
+    smallest_distance = 20
+    result = config.stations[0]
+    for station in config.stations:
+        #ä never appears anywhere else
+        padded_station = station.ljust(20, u"ä")
+        distance = 20 - amount_common_char(padded_station, test_str)
+        if distance < smallest_distance:
+            smallest_distance = distance
+            result = station
+    return result
+
+
 def correct_station_name(attempt):
-    return None  # FIXME
+    closest_match = None
+
+    matches = []
+    #test beginnings
+    for station in config.stations:
+            if station.lower().find(attempt.lower()) >= 0:
+                matches.append(station)
+    if len(matches) == 1:
+        closest_match = matches[0]
+
+    if closest_match is not None:
+        return closest_match
+
+    results = {station: [0, 0] for station in config.stations}
+    for edit1 in edits1(attempt):
+        station = clostest_levenshtein_station(edit1)
+        results[station][0] += 1
+
+    most_likely_station_index = max(results.values())
+    most_likely_station = results.keys()[results.values().index(most_likely_station_index)]
+    return most_likely_station
 
 def get_conversation_status(msg):
     return busses.conversation_bus[msg.chat.id]["state"]
