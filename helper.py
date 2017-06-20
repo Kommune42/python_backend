@@ -43,8 +43,17 @@ def get_closest_station(location):
             nearest_station = config.station_position[station_pos]
     return nearest_station
 
+def correct_station_name(attempt):
+    return None  # FIXME
+
 def get_conversation_status(msg):
     return busses.conversation_bus[msg.chat.id]["state"]
 
+def is_conversation_status(state, msg):
+    #Check if users conversation status has given state
+    return (msg.from_user.id == busses.conversation_bus[msg.chat.id]["user"]
+            and busses.conversation_bus[msg.chat.id]["state"] == state)
+
 def set_conversation_status(msg, state):
+    busses.conversation_bus[msg.chat.id]["user"] = msg.from_user.id
     busses.conversation_bus[msg.chat.id]["state"] = state
