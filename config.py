@@ -19,7 +19,7 @@ dynamic_conf = json.load(dynamic_conf_file)
 admin_ids = dynamic_conf["admin_ids"]
 lang = dynamic_conf["language"]
 
-webhook_address = "https://saufbot.herokuapp.com"
+webhook_address = "https://saufbot.herokuapp.com/" + token
 
 station_position = {
     (52.548611, 13.389444): "Gesundbrunnen",
