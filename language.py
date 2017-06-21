@@ -2,18 +2,22 @@ import config
 
 conf = {
     "de": {
-        "whereat": "standort",
-        "whereat_response": "Bitte antworte mit Position oder Stationennamen",
+        "whereat": "wo",
+        "setat_response": "Sag mir wo du bist",
         "hereat": "Da Crew is hier: ",
         "couldnotfindstation": "Hab nich verstanden welche Station",
-        "setat": "standort"
+        "setat": "sindhier",
+        "cancel": "abbrechen",
+        "next": "nächste"
     },
     "en": {
         "whereat": "whereat",
-        "whereat_response": "Send your location or a station name",
+        "setat_response": "Where you at?",
         "hereat": "Da Crew is here: ",
         "couldnotfindstation": "COULD YOU SPEAK UP A BIT? I DIDNT GET THAT",
-        "setat": "setat"
+        "setat": "setat",
+        "cancel": "cancel",
+        "next": "next"
     }
 }
 
