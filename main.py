@@ -7,6 +7,9 @@ import busses
 import response_engine
 
 saufi = telegram.Bot(token=config.token)
+saufi.set_webhook(url="https://saufbot.herokuapp.com/" + config.token)
+
+print "BOT UP"
 
 listener.update_queue(saufi)
 

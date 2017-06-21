@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import busses
+import telegram
 
 
 def update_queue(bot):
@@ -20,6 +21,9 @@ def update_queue(bot):
         if update in busses.handled_updates:
             busses.new_updates.remove(update)
 
-    busses.new_updates = busses.new_updates + bot.get_updates(offset=last_id + 1)
+    try:
+        busses.new_updates = busses.new_updates + bot.get_updates(offset=last_id + 1)
+    except telegram.error.TimedOut:
+        pass
 
     busses.handled_updates = []
