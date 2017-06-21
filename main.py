@@ -8,7 +8,7 @@ import response_engine
 
 
 saufi = telegram.Bot(token=config.token)
-saufi.set_webhook(url=(config.webhook_address + config.token))
+saufi.set_webhook(url=(config.webhook_address + "/" + config.token))
 listener.init(saufi)
 
 
