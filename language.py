@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import config
 
 conf = {
@@ -6,9 +8,10 @@ conf = {
         "setat_response": "Sag mir wo du bist",
         "hereat": "Da Crew is hier: ",
         "couldnotfindstation": "Hab nich verstanden welche Station",
-        "setat": "sindhier",
+        "setat": "wirhier",
         "cancel": "abbrechen",
-        "next": "nächste"
+        "next": "nächste",
+        "drivingto": "Auf auf. Nächste Station: "
     },
     "en": {
         "whereat": "whereat",
@@ -17,7 +20,8 @@ conf = {
         "couldnotfindstation": "COULD YOU SPEAK UP A BIT? I DIDNT GET THAT",
         "setat": "setat",
         "cancel": "cancel",
-        "next": "next"
+        "next": "next",
+        "drivingto": "All onboard. Next station is: "
     }
 }
 
