@@ -8,8 +8,8 @@ import response_engine
 
 
 saufi = telegram.Bot(token=config.token)
-listener.init(saufi)
 saufi.set_webhook(url=(config.webhook_address + config.token))
+listener.init(saufi)
 
 
 for _ in range(500000):
