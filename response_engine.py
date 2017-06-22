@@ -19,7 +19,7 @@ def command_handler(msg):
 
     chat_type = msg.chat.type
     chat_id = msg.chat.id
-    is_admin = msg.from_user.id in config.admin_ids
+    is_admin = True  # msg.from_user.id in config.admin_ids
 
 
     if helper.is_conversation_status(None, msg):
@@ -63,7 +63,7 @@ def location_handler(msg):
 def inline_handler(inline):
     query = inline.query
     location = inline.location
-    is_admin = inline.from_user.id in config.admin_ids
+    is_admin =  True # inline.from_user.id in config.admin_ids
 
     if len(query) == 0:
         return
@@ -73,8 +73,6 @@ def inline_handler(inline):
         args = inline.query[len(command):].split()
     else:
         args = []
-
-    print command == get_locale("setat")
 
     if command == get_locale("setat") and is_admin:
         if location is not None:

@@ -2,9 +2,15 @@
 from __future__ import unicode_literals
 import json
 import os
-import secure_conf
 
-token = os.environ.get("TOKEN")
+try:
+    secure_conf = json.load(open("./secure_conf.conf"))
+    token = secure_conf["token"]
+except IOError:
+    if not "TOKEN" in os.environ:
+        raise IOError
+    token = os.environ["TOKEN"]
+
 
 dynamic_conf_file = open("./conf.conf", "r")
 dynamic_conf = json.load(dynamic_conf_file)

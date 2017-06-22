@@ -6,6 +6,11 @@ import listener
 import busses
 import response_engine
 
+try:
+    import heroku_satisfier
+except ImportError:
+    pass
+
 saufi = telegram.Bot(token=config.token)
 
 listener.update_queue(saufi)
