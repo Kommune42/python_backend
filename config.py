@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+import os
 import secure_conf
 
-token = secure_conf.token
+token = os.environ.get("TOKEN")
 
 dynamic_conf_file = open("./conf.conf", "r")
 dynamic_conf = json.load(dynamic_conf_file)
