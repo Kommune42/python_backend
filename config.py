@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import json
 import os
 
-
 try:
     secure_conf = json.load(open("./secure_conf.conf"))
     token = secure_conf["token"]
