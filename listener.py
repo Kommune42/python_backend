@@ -7,7 +7,7 @@ update_queue = queue.Queue()
 
 def init(bot):
     global server
-    server = webhookhandler.WebhookServer(("localhost", 80), webhookhandler.WebhookHandler, update_queue, config.token, bot)
+    server = webhookhandler.WebhookServer(("saufbot.herokuapp.com", 80), webhookhandler.WebhookHandler, update_queue, config.token, bot)
     server.serve_forever()
 
 def get_updates():
