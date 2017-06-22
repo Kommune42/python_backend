@@ -6,14 +6,13 @@ import listener
 import busses
 import response_engine
 
-
 saufi = telegram.Bot(token=config.token)
-saufi.set_webhook(url=(config.webhook_address + "/" + config.token))
-listener.init(saufi)
+
+listener.update_queue(saufi)
 
 
 for _ in range(500000):
-    for update in listener.get_updates():
+    for update in busses.new_updates:
         #Some updates do not have a message
         if update.message is not None:
             msg = update.message
@@ -32,3 +31,7 @@ for _ in range(500000):
                     response_engine.text_handler(msg)
         elif update.inline_query is not None:
             response_engine.inline_handler(update.inline_query)
+
+        busses.handled_updates.append(update)
+
+    listener.update_queue(saufi)
