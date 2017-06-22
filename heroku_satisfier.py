@@ -3,6 +3,6 @@ import os
 
 _ = socket.socket()
 try:
-    _.bind(("saufbot.herokuapp.com", int(os.environ.get("PORT"))))
+    _.bind(("localhost", int(os.environ.get("PORT"))))
 except:
     print "WHY?"
