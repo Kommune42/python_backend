@@ -3,6 +3,6 @@ import os
 
 _ = socket.socket()
 try:
-    _.bind(("localhost", int(os.environ.get("PORT"))))
+    _.bind(("0.0.0.0", int(os.environ.get("PORT"))))
 except:
     print "WHY?"
