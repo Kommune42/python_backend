@@ -5,6 +5,7 @@ import helper
 import listener
 import busses
 import response_engine
+import heroku_satisfier
 
 saufi = telegram.Bot(token=config.token)
 

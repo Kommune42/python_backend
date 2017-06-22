@@ -7,7 +7,7 @@ try:
     secure_conf = json.load(open("./secure_conf.conf"))
     token = secure_conf["token"]
 except IOError:
-    if not "TOKEN" in os.envron:
+    if not "TOKEN" in os.environ:
         raise IOError
     token = os.environ["TOKEN"]
 
