@@ -44,29 +44,29 @@ def command_handler(msg):
                 reply_keyboard.append([inline_button(station, callback_data="set_station_" + station)])
 
             reply_markup = telegram.inlinekeyboardmarkup.InlineKeyboardMarkup(reply_keyboard)
-            msg.reply_text(get_locale("select"), reply_markup=reply_markup)
+            msg.reply_text(get_locale("select"), reply_markup=reply_markup, quote=False)
 
         if command == get_locale("setline"):
             if len(args) == 0:
-                msg.reply_text(get_locale(busses.status_bus["line"]))
+                msg.reply_text(get_locale(busses.status_bus["line"]), quote=False)
             elif is_admin:
                 if args[0] in ["S41", "S42"]:
                     busses.status_bus["line"] = args[0]
-                msg.reply_text(get_locale(busses.status_bus["line"]))
+                msg.reply_text(get_locale(busses.status_bus["line"]), quote=False)
 
         if command == get_locale("shutdown") and is_admin:
             helper.shutdown()
-            msg.reply_text("ByeBye")
+            msg.reply_text("ByeBye", quote=False)
 
         if command == get_locale("whereat"):
-            msg.reply_text(get_locale("hereat") + helper.get_current_station_name())
+            msg.reply_text(get_locale("hereat") + helper.get_current_station_name(), quote=False)
 
         if command == get_locale("cancel"):
             helper.set_conversation_status(msg, None)
 
         if command == get_locale("next") and is_admin:
             mangament_units.advance_station()
-            msg.reply_text(get_locale("drivingto") + helper.get_current_station_name())
+            msg.reply_text(get_locale("drivingto") + helper.get_current_station_name(), quote=False)
 
 def text_handler(msg):
     chat_id = msg.chat.id
@@ -78,7 +78,7 @@ def location_handler(msg):
     if helper.is_conversation_status("setat", msg):
         station = helper.get_closest_station(msg.location.to_dict())
         busses.status_bus["station"] = config.stations.index(station)
-        msg.reply_text(get_locale("hereat") + station)
+        msg.reply_text(get_locale("hereat") + station, quote=False)
         helper.set_conversation_status(msg, None)
 
 # def inline_handler(inline):
@@ -149,4 +149,4 @@ def callback_handler(callback_query, bot):
         mangament_units.set_station(arg)
 
         callback_query.answer(get_locale("hereat") + arg)
-        bot.send_message(chat_id=callback_query.message.chat.id, text=get_locale("hereat")+arg)
+        bot.send_message(chat_id=callback_query.message.chat.id, text=get_locale("hereat")+arg, quote=False)
