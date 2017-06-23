@@ -151,4 +151,4 @@ def callback_handler(callback_query, bot):
         mangament_units.set_station(arg)
 
         callback_query.answer(get_locale("hereat") + arg)
-        bot.sendMessage(chat_id=callback_query.message.chat.id, text=get_locale("hereat")+arg)
+        bot.send_message(chat_id=callback_query.message.chat.id, text=get_locale("hereat")+arg)
