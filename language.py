@@ -14,7 +14,10 @@ conf = {
         "drivingto": "Auf auf. Nächste Station: ",
         "noadmin": "Ich bin dumm, weil ich kein Admin bin",
         "select": "Such dir was aus",
-        "uselocation": "GPS benutzen"
+        "uselocation": "GPS benutzen",
+        "setline": "linie",
+        "S41": "Im Uhrzeigersinn (S41)",
+        "S42": "Gegen den Uhrzeigersinn (S42)"
     },
     "en": {
         "whereat": "whereat",
@@ -27,7 +30,11 @@ conf = {
         "drivingto": "All onboard. Next station is: ",
         "noadmin": "I am dumb because I am no admin",
         "select": "Thy might now choose thire destination",
-        "uselocation": "Use GPS"
+        "uselocation": "Use GPS",
+        "setline": "line",
+        "S41": "clockwise (S41)",
+        "S42": "counterclockwise (S42)"
+
     }
 }
 
