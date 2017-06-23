@@ -8,6 +8,7 @@ import mangament_units
 from language import get_locale
 
 def command_handler(msg):
+
     if len(msg.text) == 0:
         return
 
@@ -20,19 +21,45 @@ def command_handler(msg):
 
     chat_type = msg.chat.type
     chat_id = msg.chat.id
+    location = msg.location
     is_admin = True  # msg.from_user.id in config.admin_ids
 
 
     if helper.is_conversation_status(None, msg):
 
+
+#        if chat_type == "private":
+#            if command == get_locale("setat") and is_admin:
+#                if len(args) > 0:
+#                    possible_stations = helper.get_matches(args[0], 4)
+#                else:
+#                    return
+#                reply_keyboard = []
+#                inline_button = telegram.inlinekeyboardbutton.InlineKeyboardButton
+#                button = telegram.KeyboardButton
+#
+#                reply_keyboard.append(button(get_locale("uselocation"), request_location=True))
+#                for station in possible_stations:
+#                    reply_keyboard.append(inline_button(station))
+#
+#                reply_markup = telegram.ReplyKeyboardMarkup.ReplyKeyboardMarkup(inline_keyboard=[reply_keyboard])
+#                msg.reply_text(get_locale("select"), reply_markup=reply_markup)
+#
+
         if command == get_locale("setat") and is_admin:
-            if len(args) == 0:
-                msg.reply_text(get_locale("setat_response"))
-                helper.set_conversation_status(msg, "setat")
+            reply_keyboard = []
+            inline_button = telegram.inlinekeyboardbutton.InlineKeyboardButton
+
+            if len(args) > 0:
+                possible_stations = helper.get_matches(args[0], 5)
             else:
-                station = helper.get_matches(args[0])[0]
-                busses.status_bus["station"] = config.stations.index(station)
-                msg.reply_text(get_locale("hereat") + station)
+                return
+
+            for station in possible_stations:
+                reply_keyboard.append([inline_button(station, callback_data="set_station_" + station)])
+
+            reply_markup = telegram.inlinekeyboardmarkup.InlineKeyboardMarkup(reply_keyboard)
+            msg.reply_text(get_locale("select"), reply_markup=reply_markup)
 
         if command == get_locale("whereat"):
             msg.reply_text(get_locale("hereat") + helper.get_current_station_name)
@@ -114,3 +141,14 @@ def location_handler(msg):
 #         else:
 #             query_result = create_result_article(station, get_locale("noadmin"))
 #         inline.answer(results=[query_result], cache_time=0)
+
+def callback_handler(callback_query, bot):
+    data = callback_query.data
+
+    if data.startswith("set_station_"):
+        arg = data.split("_")[-1]
+
+        mangament_units.set_station(arg)
+
+        callback_query.answer(get_locale("hereat") + arg)
+        bot.sendMessage(chat_id=callback_query.message.chat.id, text=get_locale("hereat")+arg)

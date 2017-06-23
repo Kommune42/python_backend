@@ -12,7 +12,9 @@ conf = {
         "cancel": "abbrechen",
         "next": "nächste",
         "drivingto": "Auf auf. Nächste Station: ",
-        "noadmin": "Ich bin dumm, weil ich kein Admin bin"
+        "noadmin": "Ich bin dumm, weil ich kein Admin bin",
+        "select": "Such dir was aus",
+        "uselocation": "GPS benutzen"
     },
     "en": {
         "whereat": "whereat",
@@ -23,7 +25,9 @@ conf = {
         "cancel": "cancel",
         "next": "next",
         "drivingto": "All onboard. Next station is: ",
-        "noadmin": "I am dumb because I am no admin"
+        "noadmin": "I am dumb because I am no admin",
+        "select": "Thy might now choose thire destination",
+        "uselocation": "Use GPS"
     }
 }
 

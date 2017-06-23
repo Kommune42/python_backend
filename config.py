@@ -15,6 +15,7 @@ except IOError:
 dynamic_conf_file = open("./conf.conf", "r")
 dynamic_conf = json.load(dynamic_conf_file)
 
+group_id = -1001117557366
 admin_ids = dynamic_conf["admin_ids"]
 lang = dynamic_conf["language"]
 

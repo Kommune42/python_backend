@@ -46,7 +46,7 @@ def get_closest_station(location):
 
 
 def edits1(word):
-    letters    =  "/ABCFGHIJLMNOPSTWabcdefghiklmnoprstuwzßöü"
+    letters    =  "/abcdefghijklmnoprstuwzßöü"
     splits     = [(word[:i], word[i:])    for i in range(len(word) + 1)]
     deletes    = [L + R[1:]               for L, R in splits if R]
     transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R)>1]
@@ -66,7 +66,7 @@ def clostest_levenshtein_station(test_str):
     for station in config.stations:
         #ä never appears anywhere else
         padded_station = station.ljust(20, u"ä")
-        distance = 20 - amount_common_char(padded_station, test_str)
+        distance = 20 - amount_common_char(padded_station.lower(), test_str.lower())
         if distance < smallest_distance:
             smallest_distance = distance
             result = station
@@ -83,9 +83,8 @@ def get_matches(attempt, amount_results=1):
                 matches.append(station)
     if len(matches) == 1:
         closest_match = matches[0]
-
-    if closest_match is not None:
-        return closest_match
+        if amount_results == 1:
+            return closest_match
 
     results = {station: [0, 0] for station in config.stations}
     for edit1 in edits1(attempt):
@@ -93,7 +92,7 @@ def get_matches(attempt, amount_results=1):
         results[station][0] += 1
 
     #get top [amount_results] from results
-    sorted_stations_by_likelyness = sorted(results, key=results.__getitem__)
+    sorted_stations_by_likelyness = sorted(results, key=results.__getitem__, reverse=True)
     return [sorted_stations_by_likelyness[index] for index in range(amount_results)
                 if index < len(sorted_stations_by_likelyness)]
 
