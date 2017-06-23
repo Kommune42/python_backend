@@ -12,7 +12,7 @@ def command_handler(msg):
     if len(msg.text) == 0:
         return
 
-    command = msg.text.split()[0][1:]
+    command = msg.text.split()[0][1:].lower()
 
     if len(command) + 2 < len(msg.text):
         args = msg.text[len(command) + 1:].split()
@@ -48,11 +48,15 @@ def command_handler(msg):
 
         if command == get_locale("setline"):
             if len(args) == 0:
-                msg.reply_text(get_locale(config.line))
+                msg.reply_text(get_locale(busses.status_bus["line"]))
             elif is_admin:
                 if args[0] in ["S41", "S42"]:
-                    config.line = args[0]
-                msg.reply_text(get_locale(config.line))
+                    busses.status_bus["line"] = args[0]
+                msg.reply_text(get_locale(busses.status_bus["line"]))
+
+        if command == get_locale("shutdown") and is_admin:
+            helper.shutdown()
+            msg.reply_text("ByeBye")
 
         if command == get_locale("whereat"):
             msg.reply_text(get_locale("hereat") + helper.get_current_station_name())

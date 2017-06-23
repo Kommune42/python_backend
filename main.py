@@ -16,7 +16,7 @@ saufi = telegram.Bot(token=config.token)
 listener.update_queue(saufi)
 
 
-for _ in range(500000):
+while config.run:
     for update in busses.new_updates:
         #Some updates do not have a message
         if update.message is not None:

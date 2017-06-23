@@ -7,4 +7,4 @@ global status_bus
 handled_updates = []
 new_updates = []
 conversation_bus = {}  # chat_id: state
-status_bus = {"station": 0}
+status_bus = {"station": 0, "line": "S42"}

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import json
 import config
 import busses
 
@@ -113,3 +114,13 @@ def set_conversation_status(msg, state):
 
 def get_current_station_name():
     return config.stations[busses.status_bus["station"]]
+
+def shutdown():
+    data = {}
+    data["station"] = busses.status_bus["station"]
+    data["line"] = busses.status_bus["line"]
+    data["admin_ids"] = config.admin_ids
+    data["language"] = config.lang
+    with open("./conf.conf", "w") as dynamic_conf_file:
+        json.dump(data, dynamic_conf_file)
+    config.run = False

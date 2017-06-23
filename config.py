@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import json
 import os
+import busses
 
 try:
     secure_conf = json.load(open("./secure_conf.conf"))
@@ -11,13 +12,16 @@ except IOError:
         raise IOError
     token = os.environ["TOKEN"]
 
+run = True
 
-dynamic_conf_file = open("./conf.conf", "r")
-dynamic_conf = json.load(dynamic_conf_file)
+with open("./conf.conf", "r") as dynamic_conf_file:
+    dynamic_conf = json.load(dynamic_conf_file)
 
 admin_ids = dynamic_conf["admin_ids"]
 lang = dynamic_conf["language"]
-direction = dynamic_conf["line"]
+busses.status_bus["line"] = dynamic_conf["line"]
+busses.status_bus["station"] = dynamic_conf["station"]
+
 
 station_position = {
     (52.548611, 13.389444): "Gesundbrunnen",
