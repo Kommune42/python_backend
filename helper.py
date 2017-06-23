@@ -73,7 +73,7 @@ def clostest_levenshtein_station(test_str):
     return result
 
 
-def correct_station_name(attempt):
+def get_matches(attempt, amount_results=1):
     closest_match = None
 
     matches = []
@@ -92,9 +92,10 @@ def correct_station_name(attempt):
         station = clostest_levenshtein_station(edit1)
         results[station][0] += 1
 
-    most_likely_station_index = max(results.values())
-    most_likely_station = results.keys()[results.values().index(most_likely_station_index)]
-    return most_likely_station
+    #get top [amount_results] from results
+    sorted_stations_by_likelyness = sorted(results, key=results.__getitem__)
+    return [sorted_stations_by_likelyness[index] for index in range(amount_results)
+                if index < len(sorted_stations_by_likelyness)]
 
 def get_conversation_status(msg):
     return busses.conversation_bus[msg.chat.id]["state"]
@@ -110,3 +111,6 @@ def is_conversation_status(state, msg):
 def set_conversation_status(msg, state):
     busses.conversation_bus[msg.chat.id]["user"] = msg.from_user.id
     busses.conversation_bus[msg.chat.id]["state"] = state
+
+def get_current_station_name():
+    return config.stations[busses.status_bus["station"]]

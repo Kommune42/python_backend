@@ -35,7 +35,9 @@ for _ in range(500000):
                 else:
                     response_engine.text_handler(msg)
         elif update.inline_query is not None:
-            response_engine.inline_handler(update.inline_query)
+            #TODO RE-IMPLEMENT INLINE BOT
+            #response_engine.inline_handler(update.inline_query)
+            pass
 
         busses.handled_updates.append(update)
 
