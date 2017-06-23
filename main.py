@@ -5,7 +5,11 @@ import helper
 import listener
 import busses
 import response_engine
-import heroku_satisfier
+
+try:
+    import heroku_satisfier
+except ImportError:
+    pass
 
 saufi = telegram.Bot(token=config.token)
 
@@ -31,7 +35,11 @@ for _ in range(500000):
                 else:
                     response_engine.text_handler(msg)
         elif update.inline_query is not None:
-            response_engine.inline_handler(update.inline_query)
+            #TODO RE-IMPLEMENT INLINE BOT
+            #response_engine.inline_handler(update.inline_query)
+            pass
+        elif update.callback_query is not None:
+            response_engine.callback_handler(update.callback_query, saufi)
 
         busses.handled_updates.append(update)
 
