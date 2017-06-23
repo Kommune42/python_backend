@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import telegram
 import uuid
 import config
@@ -62,7 +63,7 @@ def command_handler(msg):
             msg.reply_text(get_locale("select"), reply_markup=reply_markup)
 
         if command == get_locale("whereat"):
-            msg.reply_text(get_locale("hereat") + helper.get_current_station_name)
+            msg.reply_text(get_locale("hereat") + helper.get_current_station_name())
 
         if command == get_locale("cancel"):
             helper.set_conversation_status(msg, None)
