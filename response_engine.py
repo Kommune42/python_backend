@@ -14,6 +14,12 @@ def command_handler(msg):
 
     command = msg.text.split()[0][1:].lower()
 
+    if "@" in command:
+        if "@sauf_bot" in command:
+            command = command[:command.find("@")]
+        else:
+            return
+
     if len(command) + 2 < len(msg.text):
         args = msg.text[len(command) + 1:].split()
     else:
