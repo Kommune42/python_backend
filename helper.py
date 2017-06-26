@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+import pendulum
 import config
 import busses
 
@@ -121,6 +122,19 @@ def shutdown():
     data["line"] = busses.status_bus["line"]
     data["admin_ids"] = config.admin_ids
     data["language"] = config.lang
+    data["set_at_time"] = busses.status_bus["set_at_time"]
+    data["arrive_time"] = busses.status_bus["arrive_time"]
     with open("./conf.conf", "w") as dynamic_conf_file:
         json.dump(data, dynamic_conf_file)
     config.run = False
+
+
+def time_diff_for_humans(time_diff):
+    return pendulum.now().add(seconds=time_diff).diff_for_humans(locale=config.lang)
+
+def get_time_since_epoch(timelike):
+    try:
+        seconds_since_epoch = pendulum.parse(timelike).diff(pendulum.now().EPOCH).in_seconds()
+        return seconds_since_epoch
+    except pendulum.parsing.exceptions.ParserError:
+        return None

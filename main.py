@@ -39,7 +39,10 @@ while config.run:
             #response_engine.inline_handler(update.inline_query)
             pass
         elif update.callback_query is not None:
-            response_engine.callback_handler(update.callback_query, saufi)
+            try:
+                response_engine.callback_handler(update.callback_query, saufi)
+            except telegram.error.BadRequest:
+                pass
 
         busses.handled_updates.append(update)
 

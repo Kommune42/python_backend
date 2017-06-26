@@ -6,7 +6,9 @@ conf = {
     "de": {
         "whereat": "wo",
         "setat_response": "Sag mir wo du bist",
-        "hereat": "Da Crew is hier: ",
+        "hereatnow": "Da Crew ist hier: ",
+        "hereatfut": "Treffen bei: ",
+        "hereatago": "Da Crew war hier: ",
         "couldnotfindstation": "Hab nich verstanden welche Station",
         "setat": "wirhier",
         "cancel": "abbrechen",
@@ -23,7 +25,9 @@ conf = {
     "en": {
         "whereat": "whereat",
         "setat_response": "Where you at?",
-        "hereat": "Da Crew is here: ",
+        "hereatnow": "Da Crew is here: ",
+        "hereatfut": "Meeting at: ",
+        "hereatago": "Da Crew was here: ",
         "couldnotfindstation": "COULD YOU SPEAK UP A BIT? I DIDNT GET THAT",
         "setat": "setat",
         "cancel": "cancel",

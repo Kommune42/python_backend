@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import telegram
 import uuid
+import time
+
 import config
 import busses
 import helper
@@ -28,12 +30,19 @@ def command_handler(msg):
     chat_type = msg.chat.type
     chat_id = msg.chat.id
     location = msg.location
-    is_admin = True  # msg.from_user.id in config.admin_ids
+    is_admin = msg.from_user.id in config.admin_ids
 
 
     if helper.is_conversation_status(None, msg):
 
         if command == get_locale("setat") and is_admin:
+            if len(args) > 1:
+                arrive_time = helper.get_time_since_epoch(args[1])
+                if arrive_time is None:
+                    arrive_time = time.time()
+            else:
+                arrive_time = time.time()
+            busses.status_bus["arrive_time"] = arrive_time
 
             possible_stations = []
             if location is not None:
@@ -47,7 +56,7 @@ def command_handler(msg):
             inline_button = telegram.inlinekeyboardbutton.InlineKeyboardButton
 
             for station in possible_stations:
-                reply_keyboard.append([inline_button(station, callback_data="set_station_" + station)])
+                reply_keyboard.append([inline_button(station, callback_data="setstation_" + station)])
 
             reply_markup = telegram.inlinekeyboardmarkup.InlineKeyboardMarkup(reply_keyboard)
             msg.reply_text(get_locale("select"), reply_markup=reply_markup, quote=False)
@@ -56,7 +65,9 @@ def command_handler(msg):
             if len(args) == 0:
                 msg.reply_text(get_locale(busses.status_bus["line"]), quote=False)
             elif is_admin:
-                if args[0] in ["S41", "S42"]:
+                if args[0] in ["S41", "S42", "42", "41"]:
+                    if not args[0].startswith("S"):
+                        args[0] = "S" + args[0]
                     busses.status_bus["line"] = args[0]
                 msg.reply_text(get_locale(busses.status_bus["line"]), quote=False)
 
@@ -65,7 +76,14 @@ def command_handler(msg):
             msg.reply_text("ByeBye", quote=False)
 
         if command == get_locale("whereat"):
-            msg.reply_text(get_locale("hereat") + helper.get_current_station_name(), quote=False)
+            time_diff = busses.status_bus["arrive_time"] - busses.status_bus["set_at_time"]
+            if time_diff < -3:
+                text = get_locale("hereatago") + helper.get_current_station_name() + " " + helper.time_diff_for_humans(time_diff)
+            elif time_diff > 0:
+                text = get_locale("hereatfut") + helper.get_current_station_name() + " " + helper.time_diff_for_humans(time_diff)
+            else:
+                text = get_locale("hereatnow") + helper.get_current_station_name()
+            msg.reply_text(text, quote=False)
 
         if command == get_locale("cancel"):
             helper.set_conversation_status(msg, None)
@@ -83,8 +101,8 @@ def location_handler(msg):
 
     if helper.is_conversation_status("setat", msg):
         station = helper.get_closest_station(msg.location.to_dict())
-        busses.status_bus["station"] = config.stations.index(station)
-        msg.reply_text(get_locale("hereat") + station, quote=False)
+        mangament_units.set_station(station)
+        msg.reply_text(get_locale("hereatnow") + station, quote=False)
         helper.set_conversation_status(msg, None)
 
 # def inline_handler(inline):
@@ -147,12 +165,24 @@ def location_handler(msg):
 
 def callback_handler(callback_query, bot):
     data = callback_query.data
-    #TODO implement is_admin
+    is_admin = callback_query.from_user.id in config.admin_ids
 
-    if data.startswith("set_station_"):
-        arg = data.split("_")[-1]
+    if data.startswith("setstation_") and is_admin:
+        args = data.split("_")
+        del args[0]
+        station = args[0]
 
-        mangament_units.set_station(arg)
+        mangament_units.set_station(station)
 
-        callback_query.answer(get_locale("hereat") + arg)
-        bot.send_message(chat_id=callback_query.message.chat.id, text=get_locale("hereat")+arg, quote=False)
+        time_diff = busses.status_bus["arrive_time"] - busses.status_bus["set_at_time"]
+
+        if time_diff < -3 or time_diff > 0:
+            text = get_locale("hereatago") + station + " " + helper.time_diff_for_humans(time_diff)
+        elif time_diff > 0:
+            text = get_locale("hereatfut") + station + " " + helper.time_diff_for_humans(time_diff)
+        else:
+            text = get_locale("hereatnow") + station
+
+
+        callback_query.answer(text)
+        bot.send_message(chat_id=callback_query.message.chat.id, text=text, quote=False)
