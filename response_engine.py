@@ -76,7 +76,7 @@ def command_handler(msg):
             msg.reply_text("ByeBye", quote=False)
 
         if command == get_locale("whereat"):
-            time_diff = busses.status_bus["arrive_time"] - busses.status_bus["set_at_time"]
+            time_diff = busses.status_bus["arrive_time"] - time.time()
             if time_diff < -3:
                 text = get_locale("hereatago") + helper.get_current_station_name() + " " + helper.time_diff_for_humans(time_diff)
             elif time_diff > 0:

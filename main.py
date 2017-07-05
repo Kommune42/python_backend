@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import telegram
+
 import config
 import helper
 import listener
 import busses
 import response_engine
+import logger
 
 try:
     import heroku_satisfier
@@ -18,10 +20,13 @@ listener.update_queue(saufi)
 
 while config.run:
     for update in busses.new_updates:
+        logger.complete_log(update)
         #Some updates do not have a message
         if update.message is not None:
             msg = update.message
             msg_type = helper.get_message_type(msg)
+
+            logger.log_message(msg)
 
             if not msg.chat.id in busses.conversation_bus:
                 busses.conversation_bus[msg.chat.id] = {"state": None, "user": 0}

@@ -4,6 +4,7 @@ import json
 import os
 import busses
 
+#fetch token
 try:
     secure_conf = json.load(open("./secure_conf.conf"))
     token = secure_conf["token"]
@@ -12,7 +13,15 @@ except IOError:
         raise IOError
     token = os.environ["TOKEN"]
 
+#running state
 run = True
+
+msg_log_file_path = "./msg_log.txt"
+complete_log_file_path = "./log.log"
+
+#load config and state
+with open("./state.json", "r") as internal_state_file:
+    busses.status_bus.update(json.load(internal_state_file))
 
 with open("./conf.conf", "r") as dynamic_conf_file:
     dynamic_conf = json.load(dynamic_conf_file)
@@ -24,7 +33,7 @@ busses.status_bus["station"] = dynamic_conf["station"]
 busses.status_bus["set_at_time"] = dynamic_conf["set_at_time"]
 busses.status_bus["arrive_time"] = dynamic_conf["arrive_time"]
 
-
+#manually changeable Constants
 station_position = {
     (52.548611, 13.389444): "Gesundbrunnen",
     (52.549444, 13.413889): "Schönhauser Allee",

@@ -28,6 +28,8 @@ def get_message_type(msg):
         return "video_note"
     elif msg.contact is not None:
         return "contact"
+    elif hasattr(msg, "new_chat_member"):
+        return "new_user"
     else:
         return "unknown"
 
@@ -127,7 +129,6 @@ def shutdown():
     with open("./conf.conf", "w") as dynamic_conf_file:
         json.dump(data, dynamic_conf_file)
     config.run = False
-
 
 def time_diff_for_humans(time_diff):
     return pendulum.now().add(seconds=time_diff).diff_for_humans(locale=config.lang)
