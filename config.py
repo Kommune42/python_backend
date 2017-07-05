@@ -31,7 +31,7 @@ lang = dynamic_conf["language"]
 busses.status_bus["line"] = dynamic_conf["line"]
 busses.status_bus["station"] = dynamic_conf["station"]
 busses.status_bus["set_at_time"] = dynamic_conf["set_at_time"]
-busses.status_bus["arrive_time"] = dynamic_conf["arrive_time"]
+busses.status_bus["arrive_delay"] = dynamic_conf["arrive_delay"]
 
 #manually changeable Constants
 station_position = {

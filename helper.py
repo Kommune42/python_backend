@@ -125,7 +125,7 @@ def shutdown():
     data["admin_ids"] = config.admin_ids
     data["language"] = config.lang
     data["set_at_time"] = busses.status_bus["set_at_time"]
-    data["arrive_time"] = busses.status_bus["arrive_time"]
+    data["arrive_delay"] = busses.status_bus["arrive_delay"]
     with open("./conf.conf", "w") as dynamic_conf_file:
         json.dump(data, dynamic_conf_file)
     config.run = False

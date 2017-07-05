@@ -37,14 +37,20 @@ def command_handler(msg):
 
         if command == get_locale("setat") and is_admin:
             if len(args) > 1:
-                print args[1]
-                arrive_time = helper.get_time_since_epoch(args[1])
-                if arrive_time is None:
-                    arrive_time = time.time()
+                timelike = args[-1]
+                try:
+                    if ":" in timelike:
+                        arrive_delay = int(timelike[timelike.find(":") + 1:]) * 60  * 60 + int(timelike[:timelike.find(":")]) * 60
+                    else:
+                        arrive_delay = int(timelike) * 60
+                except ValueError:
+                    arrive_delay = None
+
+                if arrive_delay is None:
+                    arrive_delay = 0
             else:
-                arrive_time = time.time()
-            busses.status_bus["arrive_time"] = arrive_time
-            print arrive_time - time.time()
+                arrive_delay = 0
+            busses.status_bus["arrive_delay"] = arrive_delay
 
             possible_stations = []
             if location is not None:
@@ -78,9 +84,7 @@ def command_handler(msg):
             msg.reply_text("ByeBye", quote=False)
 
         if command == get_locale("whereat"):
-            time_diff = busses.status_bus["arrive_time"] - time.time()
-            print time_diff
-            print busses.status_bus["arrive_time"]
+            time_diff = busses.status_bus["arrive_delay"] + busses.status_bus["set_at_time"] - time.time()
             if time_diff < -3:
                 text = get_locale("hereatago") + helper.get_current_station_name() + " " + helper.time_diff_for_humans(time_diff)
             elif time_diff > 0:
@@ -178,9 +182,9 @@ def callback_handler(callback_query, bot):
 
         mangament_units.set_station(station)
 
-        time_diff = busses.status_bus["arrive_time"] - busses.status_bus["set_at_time"]
+        time_diff = busses.status_bus["arrive_delay"] + busses.status_bus["set_at_time"] - time.time()
 
-        if time_diff < -3 or time_diff > 0:
+        if time_diff < -3:
             text = get_locale("hereatago") + station + " " + helper.time_diff_for_humans(time_diff)
         elif time_diff > 0:
             text = get_locale("hereatfut") + station + " " + helper.time_diff_for_humans(time_diff)
