@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import time
 import string
+import json
 
 import config
 import helper
@@ -47,4 +48,7 @@ def log_message(msg):
 
 def complete_log(update):
     with open(config.complete_log_file_path, "a") as log_file:
-        log_file.write(str(update.to_json()).replace("\n", "\\n") + "\n".encode("utf-8"))
+        data = update.to_dict()
+        data.update({"time": time.time()})
+        json_data = json.dumps(data)
+        log_file.write(str(json_data).replace("\n", "\\n") + "\n".encode("utf-8"))
