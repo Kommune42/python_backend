@@ -126,6 +126,8 @@ def shutdown():
     data["language"] = config.lang
     data["set_at_time"] = busses.status_bus["set_at_time"]
     data["arrive_delay"] = busses.status_bus["arrive_delay"]
+    data["latest_messages"] = {chat_id: busses.status_bus["latest_messages"][chat_id].to_json() for chat_id in busses.status_bus["latest_messages"]}
+
     with open("./conf.conf", "w") as dynamic_conf_file:
         json.dump(data, dynamic_conf_file)
     config.run = False

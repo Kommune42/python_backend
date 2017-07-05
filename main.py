@@ -8,14 +8,7 @@ import busses
 import response_engine
 import logger
 
-try:
-    import heroku_satisfier
-except ImportError:
-    pass
-
-saufi = telegram.Bot(token=config.token)
-
-listener.update_queue(saufi)
+listener.update_queue(config.saufi)
 
 try:
     while config.run:
@@ -45,12 +38,12 @@ try:
                 pass
             elif update.callback_query is not None:
                 try:
-                    response_engine.callback_handler(update.callback_query, saufi)
+                    response_engine.callback_handler(update.callback_query, config.saufi)
                 except telegram.error.BadRequest:
                     pass
 
             busses.handled_updates.append(update)
 
-        listener.update_queue(saufi)
+        listener.update_queue(config.saufi)
 except KeyboardInterrupt:
     helper.shutdown()

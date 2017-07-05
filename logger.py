@@ -6,6 +6,7 @@ import json
 
 import config
 import helper
+import busses
 
 
 def log_message(msg):
@@ -15,6 +16,8 @@ def log_message(msg):
     line = time_str[:time_str.find(".")]
     line = line.rjust(10, str(" "))
     line += " "
+
+    busses.status_bus["latest_messages"][msg.chat_id] = msg
 
     msg_type = helper.get_message_type(msg)
     if msg_type == "text" and msg.text.startswith("/"):

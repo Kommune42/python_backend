@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import json
 import os
+import telegram
 import busses
 
 #fetch token
@@ -12,6 +13,8 @@ except IOError:
     if not "TOKEN" in os.environ:
         raise IOError
     token = os.environ["TOKEN"]
+
+saufi = telegram.Bot(token=token)
 
 #running state
 run = True
@@ -32,6 +35,7 @@ busses.status_bus["line"] = dynamic_conf["line"]
 busses.status_bus["station"] = dynamic_conf["station"]
 busses.status_bus["set_at_time"] = dynamic_conf["set_at_time"]
 busses.status_bus["arrive_delay"] = dynamic_conf["arrive_delay"]
+busses.status_bus["latest_messages"] = {chat_id: telegram.Message.de_json(json.loads(dynamic_conf["latest_messages"][chat_id]), saufi) for chat_id in dynamic_conf["latest_messages"]}
 
 #manually changeable Constants
 station_position = {

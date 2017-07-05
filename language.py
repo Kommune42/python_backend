@@ -20,7 +20,8 @@ conf = {
         "setline": "linie",
         "S41": "Im Uhrzeigersinn (S41)",
         "S42": "Gegen den Uhrzeigersinn (S42)",
-        "shutdown": "bye"
+        "shutdown": "bye",
+        "say": "sag"
     },
     "en": {
         "whereat": "whereat",
@@ -39,7 +40,8 @@ conf = {
         "setline": "line",
         "S41": "clockwise (S41)",
         "S42": "counterclockwise (S42)",
-        "shutdown": "shutdown"
+        "shutdown": "shutdown",
+        "say": "say"
     }
 }
 
