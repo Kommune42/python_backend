@@ -67,7 +67,11 @@ def command_handler(msg):
                 reply_keyboard.append([inline_button(station, callback_data="setstation_" + station)])
 
             reply_markup = telegram.inlinekeyboardmarkup.InlineKeyboardMarkup(reply_keyboard)
-            msg.reply_text(get_locale("select"), reply_markup=reply_markup, quote=False)
+            posted_msg = msg.reply_text(get_locale("select"), reply_markup=reply_markup, quote=False)
+            if not "sent_query_messages" in busses.conversation_bus[chat_id]:
+                busses.conversation_bus[chat_id]["sent_query_messages"] = [posted_msg]
+            else:
+                busses.conversation_bus[chat_id]["sent_query_messages"].append(posted_msg)
 
         if command == get_locale("setline"):
             if len(args) == 0:
@@ -120,6 +124,7 @@ def location_handler(msg):
 def callback_handler(callback_query, bot):
     data = callback_query.data
     is_admin = callback_query.from_user.id in config.admin_ids
+    chat_id = callback_query.message.chat.id
 
     if data.startswith("setstation_") and is_admin:
         args = data.split("_")
@@ -140,3 +145,4 @@ def callback_handler(callback_query, bot):
 
         callback_query.answer(text)
         bot.send_message(chat_id=callback_query.message.chat.id, text=text, quote=False)
+        busses.conversation_bus[chat_id]["sent_query_messages"][-1].delete()

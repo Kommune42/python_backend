@@ -112,7 +112,6 @@ def is_conversation_status(state, msg):
                 and busses.conversation_bus[msg.chat.id]["state"] == state)
 
 def set_conversation_status(msg, state):
-    busses.conversation_bus[msg.chat.id]["user"] = msg.from_user.id
     busses.conversation_bus[msg.chat.id]["state"] = state
 
 def get_current_station_name():
@@ -129,7 +128,7 @@ def shutdown():
     data["latest_messages"] = {chat_id: busses.status_bus["latest_messages"][chat_id].to_json() for chat_id in busses.status_bus["latest_messages"]}
 
     with open("./conf.conf", "w") as dynamic_conf_file:
-        json.dump(data, dynamic_conf_file)
+        json.dump(data, dynamic_conf_file, indent=4)
     config.run = False
 
 def time_diff_for_humans(time_diff):
@@ -141,3 +140,8 @@ def get_time_since_epoch(timelike):
         return seconds_since_epoch
     except pendulum.parsing.exceptions.ParserError:
         return None
+
+def create_if_empty(dictionary, key, value):
+    if not key in dictionary:
+        dictionary[key] = value
+    return dictionary
