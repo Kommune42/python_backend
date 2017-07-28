@@ -33,8 +33,9 @@ def log_message(msg):
         appendix = str(location_data["latitude"]) + "°, " + str(location_data["longitude"]) + "°"
     elif msg_type == "contact":
         appendix = str(msg.contact.user_id) + " " + msg.contact.first_name + " " + msg.contact.last_name
-    elif msg_type == "new_user":
-        appendix = str(msg.new_chat_member.id) + " " + str(msg.new_chat_member.first_name) + " " + str(msg.new_chat_member.last_name)
+        #FIXME
+    #elif msg_type == "new_user":
+    #    appendix = str(msg.new_chat_member.id) + " " + str(msg.new_chat_member.first_name) + " " + str(msg.new_chat_member.last_name)
     elif msg_type in ["audio", "document", "game", "photo", "sticker", "video", "voice", "video_note", "unknown"]:
         appendix = ""
 

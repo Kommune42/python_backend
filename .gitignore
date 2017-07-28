@@ -1,7 +1,13 @@
 *.pyc
 *.pyo
 .rclint
-secure_conf.conf
+server/secure_conf.conf
 log.log
 msg_log.txt
 conf.conf
+bin
+include
+lib
+local
+share
+pip-selfcheck.json
