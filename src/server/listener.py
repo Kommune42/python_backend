@@ -27,7 +27,3 @@ def update_queue(bot):
         pass
 
     busses.handled_updates = []
-
-
-def start(bus):
-    return bus
