@@ -1,7 +1,7 @@
 *.pyc
 *.pyo
 .rclint
-server/secure_conf.conf
+src/server/secure_conf.json
 log.log
 msg_log.txt
 conf.conf

@@ -29,21 +29,20 @@ class server(object):
     def accept_connections(self):
         while self.threads_run["ack_con"]:
             connection, addr = self.s.accept()
-            self.connections.append(connection)
-            self.lookup_table[connection] = addr
-            self.connections_active[connection] = False
             connection.send(self.name)
             data = connection.recv(max_size_websocket)
             msg = json.loads(data)
-            print msg
-            print msg["action"] == "ack"
             if msg["action"] == "ack":
+                #TODO: What to do with name?
                 connection_name = msg["data"]
+                connection.send(message(data=self.name, action="ack"))
+                self.connections.append(connection)
+                self.lookup_table[connection] = addr
+                self.connections_active[connection] = False
                 print "Connected to " + connection_name
             else:
-                #TODO Delete records of connection
+                connection.send(message(data=self.name, action="nack"))
                 print "Tried to initiate Connection with wrong initialization: " + str(addr)
-            #TODO: What to do with name?
 
     def close_connection(self, connection):
         self.lookup_table.pop(connection)
@@ -75,6 +74,14 @@ class server(object):
         ack_con.start()
         read.start()
 
+
+def send_long(msg, connection):
+    #~Three bytes per char should be enough
+    max_string_length = max_size_websocket / 3
+    #Split msg into max_string_length sized blocks
+    msg_blocks = [msg[i:max_string_length+i] for i in range(0, len(msg), max_string_length)]
+    for block in msg_blocks:
+        connection.send(block)
 
 def message(data="", action="", error=""):
     return json.dumps({"data": data, "action": action, "error": error})
