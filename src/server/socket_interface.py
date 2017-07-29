@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 from communication import socket_handler
 from . import telegram_handler

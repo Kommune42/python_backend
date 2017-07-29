@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 import threading
 import json
@@ -29,27 +30,27 @@ class server(object):
     def accept_connections(self):
         while self.threads_run["ack_con"]:
             connection, addr = self.s.accept()
-            connection.send(self.name)
+            connection.send(message(data=self.name, action="ack"))
             data = connection.recv(max_size_websocket)
             msg = json.loads(data)
             if msg["action"] == "ack":
                 #TODO: What to do with name?
                 connection_name = msg["data"]
-                connection.send(message(data=self.name, action="ack"))
                 self.connections.append(connection)
                 self.lookup_table[connection] = addr
                 self.connections_active[connection] = False
                 print "Connected to " + connection_name
-            else:
-                connection.send(message(data=self.name, action="nack"))
-                print "Tried to initiate Connection with wrong initialization: " + str(addr)
+            elif msg["data"] != "nack":
+                connection.send(message(data=self.name, action="close"))
+                connection.close()
+                print "Tried to initiate Connection with wrong initialization: " + msg["action"]
 
     def close_connection(self, connection):
         self.lookup_table.pop(connection)
-        self.connections.pop(connection)
+        self.connections.remove(connection)
         self.connections_active.pop(connection)
         connection.send(message(action="close"))
-        connection.shutdown()
+        connection.shutdown(socket.SHUT_RDWR)
         connection.close()
 
     def read_connections(self):
@@ -64,15 +65,39 @@ class server(object):
                         print "closing connection"
                         self.threads_run["read"] = False
                         self.threads_run["ack_con"] = False
-                        #self.close_connection(connection)
-                    else:
-                        self.connections_active[connection] = False
+                        self.close_connection(connection)
+                    self.connections_active[connection] = False
 
     def start(self):
         ack_con = threading.Thread(target=self.accept_connections, name="ack_con")
         read = threading.Thread(target=self.read_connections, name="read")
         ack_con.start()
         read.start()
+
+
+class client(object):
+
+    def __init__(self, name="NONE"):
+        self.s = socket.socket()
+
+        self.name = name
+
+        self.threads_run = {}
+
+    def connect_to(self, dest, module_name="NONE"):
+        self.s.connect(dest)
+        ack_data = self.s.recv(max_size_websocket)
+        ack_msg = json.loads(ack_data)
+        if ack_msg["action"] == "ack" and ack_msg["data"] == module_name:
+            self.s.send(message(action="ack", data=self.name))
+            print "Connection Established"
+        else:
+            self.s.send(message(action="nack"))
+            print "Connection terminated: Nack"
+            self.s.close() #FIXME sort out protocol
+
+    def close(self):
+        self.s.send(message(action="close"))
 
 
 def send_long(msg, connection):
