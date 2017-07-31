@@ -2,7 +2,7 @@
 import telegram
 import json
 
-with open("./secure_conf.json", "r") as conf_file:
+with open("./server/secure_conf.json", "r") as conf_file:
      bot = telegram.Bot(token=json.load(conf_file)["token"])
 
 updates_buffer = []
@@ -21,3 +21,10 @@ def update_buffer():
     for update in new_updates:
         if update.update_id > last_update_id:
             last_update_id = update.update_id
+
+
+def get_next_update(old_update_id):
+    for update in updates_buffer:
+        if update.update_id == old_update_id + 1:
+            return update
+    return None

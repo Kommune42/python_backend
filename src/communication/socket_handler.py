@@ -2,13 +2,16 @@
 import socket
 import threading
 import json
-import os
-
+import re
 
 with open("./global_conf.json", "r") as global_conf_file:
     global_conf = json.load(global_conf_file)
 
+with open("./communication/conf.json", "r") as conf_file:
+    local_conf = json.load(conf_file)
+
 max_size_websocket = global_conf["max_size_websocket"]
+termination_symbol = local_conf["termination_symbol"]
 
 class server(object):
 
@@ -30,18 +33,18 @@ class server(object):
     def accept_connections(self):
         while self.threads_run["ack_con"]:
             connection, addr = self.s.accept()
-            connection.send(message(data=self.name, action="ack"))
-            data = connection.recv(max_size_websocket)
-            msg = json.loads(data)
+            send_long(message(data=self.name, action="ack"), connection)
+            msg = recv_long(connection)
             if msg["action"] == "ack":
                 #TODO: What to do with name?
                 connection_name = msg["data"]
                 self.connections.append(connection)
                 self.lookup_table[connection] = addr
                 self.connections_active[connection] = False
+                send_long(message(action="ready"), connection)
                 print "Connected to " + connection_name
             elif msg["data"] != "nack":
-                connection.send(message(data=self.name, action="close"))
+                send_long(message(data=self.name, action="close"), connection)
                 connection.close()
                 print "Tried to initiate Connection with wrong initialization: " + msg["action"]
 
@@ -49,7 +52,7 @@ class server(object):
         self.lookup_table.pop(connection)
         self.connections.remove(connection)
         self.connections_active.pop(connection)
-        connection.send(message(action="close"))
+        send_long(message(action="close"), connection)
         connection.shutdown(socket.SHUT_RDWR)
         connection.close()
 
@@ -58,8 +61,7 @@ class server(object):
             for connection in self.connections:
                 if not self.connections_active[connection]:
                     self.connections_active[connection] = True
-                    data = connection.recv(max_size_websocket)
-                    msg = json.loads(data)
+                    msg = recv_long(connection)
                     self.responding_function(msg, connection)
                     if msg["action"] == "close":
                         print "closing connection"
@@ -74,6 +76,11 @@ class server(object):
         ack_con.start()
         read.start()
 
+    def stop(self):
+        for connection in self.connections:
+            send_long(message(action="close"), connection)
+            connection.close()
+
 
 class client(object):
 
@@ -86,27 +93,60 @@ class client(object):
 
     def connect_to(self, dest, module_name="NONE"):
         self.s.connect(dest)
-        ack_data = self.s.recv(max_size_websocket)
-        ack_msg = json.loads(ack_data)
+        ack_msg = recv_long(self.s)
         if ack_msg["action"] == "ack" and ack_msg["data"] == module_name:
-            self.s.send(message(action="ack", data=self.name))
+            send_long(message(action="ack", data=self.name), self.s)
             print "Connection Established"
         else:
-            self.s.send(message(action="nack"))
+            send_long(message(action="nack"), self.s)
             print "Connection terminated: Nack"
             self.s.close() #FIXME sort out protocol
+        recv_long(self.s) # Wait for server to be ready
+
+    def request(self, msg):
+        send_long(msg, self.s)
+        send_long(message(action="ack"), self.s)
+        return recv_long(self.s)
 
     def close(self):
-        self.s.send(message(action="close"))
+        send_long(message(action="close"), self.s)
+        self.s.close()
 
+
+def recv_long(connection):
+    print "STARTED RECIVING"
+    finished = False
+    data = ""
+    regex_pattern = "0*\\" + termination_symbol + "$"
+    while not finished:
+        print "NOT FINISHED"
+        data = data + connection.recv(max_size_websocket)
+        print "GOT RAW DATA: " + data
+        if re.search(regex_pattern, data) is not None:
+            data = re.sub(regex_pattern, "", data)
+            finished = True
+
+    print "FINISHED RECIEVING: " + data
+    return json.loads(data)
 
 def send_long(msg, connection):
-    #~Three bytes per char should be enough
-    max_string_length = max_size_websocket / 3
-    #Split msg into max_string_length sized blocks
-    msg_blocks = [msg[i:max_string_length+i] for i in range(0, len(msg), max_string_length)]
-    for block in msg_blocks:
-        connection.send(block)
+    print "SEND: " + msg
+    data = json.loads(msg)
+    assert "action" in data.keys()
+    assert "error" in data.keys()
+    assert "data" in data.keys()
+
+    # sends the message base 64 encoded to limit the possible characters
+    # followed by the termination_symbol wich is no symbol of the base 64
+    print "RAW DATA SENT: " + msg
+    length = connection.send(msg)
+    overhang = length % max_size_websocket
+    print "BYTE LENGHT: " + str(length)
+    print "BYTE OVERHANG: " + str(overhang)
+    print "AMOUNT OF ZEROS: " + str(max_size_websocket - overhang - 1)
+    if overhang != 0:
+        connection.send(("0" * (max_size_websocket - overhang - 1)) + termination_symbol)
+    print "FINISHED SENDING"
 
 def message(data="", action="", error=""):
     return json.dumps({"data": data, "action": action, "error": error})
