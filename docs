@@ -1,0 +1,21 @@
+Basic networking protocol:
+
+Servers never initiates exchanges and only responds to clients requests
+
+Clients always initiate data exchange.
+
+Data packets are structured as json objects with the keys:
+	"action" the action to be executed
+	"data" neccessary data for the command
+	"error" Returns info when erro occured
+
+Connection initiation:
+	client connects
+	server responds with ack, data = servername
+	client either responds with ack or nack, data=clientname
+	if error happend server reponds with "close" and error
+
+Data transfer:
+	server/client accepts any data until "ack" is send.
+	All data will be joined and read as json
+
