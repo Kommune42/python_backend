@@ -1,13 +1,13 @@
 *.pyc
 *.pyo
 .rclint
-src/server/secure_conf.json
+conf/secure_conf.json
 log.log
 msg_log.txt
 conf.conf
 bin
 include
-lib
+lib/python2.7
 local
 share
 pip-selfcheck.json

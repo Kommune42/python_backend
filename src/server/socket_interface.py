@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
-from communication import socket_handler
-from . import telegram_handler
+from lib.communication import socket_handler
+import telegram_handler
 
-with open("./server/server_conf.json", "r") as conf_file:
+with open("./conf/telegram_server/server_conf.json", "r") as conf_file:
     conf = json.load(conf_file)
 
 connections_state = {}
@@ -16,19 +16,19 @@ def start():
 def stop():
     server.stop()
 
-def respond(msg, connection):
+def respond(msg, identifier):
     if msg["action"] == "register_connection":
         handler_name = msg["data"]
-        connections_state[connection] = {"last_update_id": 0}
-        socket_handler.send_long(socket_handler.message(action="ack"), connection)
+        connections_state[identifier] = {"last_update_id": 0}
+        return socket_handler.message(action="ok")
     if msg["action"] == "get_update":
         if msg["data"].isdigit():
             pass
             #TODO What now?
-        new_update = telegram_handler.get_next_update(old_update_id=connections_state[connection]["last_update_id"])
+        new_update = telegram_handler.get_next_update(old_update_id=connections_state[identifier]["last_update_id"])
+        print "UPDATE: " + str(new_update)
         if new_update is not None:
-            socket_handler.send_long(new_update.to_json(), connection)
-            connections_state[connection]["last_update_id"] = new_update.id
-            socket_handler.send_long(socket_handler.message(action="ack"), connection)
+            connections_state[identifier]["last_update_id"] = new_update.update_id
+            return socket_handler.message(data=new_update.to_json())
         else:
-            socket_handler.send_long(socket_handler.message(action="ack"), connection)
+            return socket_handler.message(data="{}")

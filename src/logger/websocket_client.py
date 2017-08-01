@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import telegram
-from communication import socket_handler
-import global_objs
+import json
+from lib.communication import socket_handler
+from src import global_objs
 
 
 client = socket_handler.client(name="logger")
@@ -15,5 +16,8 @@ def get_update():
     if returned_msg == {}:
         return "None"
     else:
-        return telegram.Update.de_json(returned_msg["data"], global_objs.bot)  # FIXME Where does the bot come from?
+        print returned_msg
+        test = telegram.Update.de_json(json.loads(returned_msg["data"]), global_objs.bot)
+        print type(test)
+        return test
     return "WHAT"

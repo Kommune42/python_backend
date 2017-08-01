@@ -4,10 +4,10 @@ import threading
 import json
 import re
 
-with open("./global_conf.json", "r") as global_conf_file:
+with open("./conf/global_conf.json", "r") as global_conf_file:
     global_conf = json.load(global_conf_file)
 
-with open("./communication/conf.json", "r") as conf_file:
+with open("./lib/communication/conf/conf.json", "r") as conf_file:
     local_conf = json.load(conf_file)
 
 max_size_websocket = global_conf["max_size_websocket"]
@@ -36,10 +36,9 @@ class server(object):
             send_long(message(data=self.name, action="ack"), connection)
             msg = recv_long(connection)
             if msg["action"] == "ack":
-                #TODO: What to do with name?
                 connection_name = msg["data"]
                 self.connections.append(connection)
-                self.lookup_table[connection] = addr
+                self.lookup_table[connection] = connection_name
                 self.connections_active[connection] = False
                 send_long(message(action="ready"), connection)
                 print "Connected to " + connection_name
@@ -48,12 +47,17 @@ class server(object):
                 connection.close()
                 print "Tried to initiate Connection with wrong initialization: " + msg["action"]
 
-    def close_connection(self, connection):
+    def passive_close_connection(self, connection):
+        self.lookup_table.pop(connection)
+        self.connections.remove(connection)
+        self.connections_active.pop(connection)
+        connection.close()
+
+    def active_close_connection(self, connection):
         self.lookup_table.pop(connection)
         self.connections.remove(connection)
         self.connections_active.pop(connection)
         send_long(message(action="close"), connection)
-        connection.shutdown(socket.SHUT_RDWR)
         connection.close()
 
     def read_connections(self):
@@ -62,12 +66,14 @@ class server(object):
                 if not self.connections_active[connection]:
                     self.connections_active[connection] = True
                     msg = recv_long(connection)
-                    self.responding_function(msg, connection)
                     if msg["action"] == "close":
                         print "closing connection"
                         self.threads_run["read"] = False
                         self.threads_run["ack_con"] = False
-                        self.close_connection(connection)
+                        self.passive_close_connection(connection)
+                    else:
+                        return_msg = self.responding_function(msg, self.lookup_table[connection])
+                        send_long(return_msg, connection)
                     self.connections_active[connection] = False
 
     def start(self):
@@ -96,19 +102,18 @@ class client(object):
         ack_msg = recv_long(self.s)
         if ack_msg["action"] == "ack" and ack_msg["data"] == module_name:
             send_long(message(action="ack", data=self.name), self.s)
+            recv_long(self.s) # Wait for server to be ready
             print "Connection Established"
         else:
             send_long(message(action="nack"), self.s)
-            print "Connection terminated: Nack"
-            self.s.close() #FIXME sort out protocol
-        recv_long(self.s) # Wait for server to be ready
+            print "Connection terminated"
+            self.active_close()
 
     def request(self, msg):
         send_long(msg, self.s)
-        send_long(message(action="ack"), self.s)
         return recv_long(self.s)
 
-    def close(self):
+    def active_close(self):
         send_long(message(action="close"), self.s)
         self.s.close()
 
@@ -117,12 +122,14 @@ def recv_long(connection):
     finished = False
     data = ""
     while not finished:
-        data = data + connection.recv(2).decode("hex")
+        raw = connection.recv(2)
+        data = data + raw.decode("hex")
         if termination_symbol in data:
             data = data.replace(termination_symbol, "")
             finished = True
 
     data = data.encode("utf-8")
+    print "RECIVED: " + data
     return json.loads(data)
 
 def send_long(msg, connection):
@@ -131,9 +138,8 @@ def send_long(msg, connection):
     assert "error" in data.keys()
     assert "data" in data.keys()
 
-    # sends the message base 64 encoded to limit the possible characters
-    # followed by the termination_symbol wich is no symbol of the base 64
-    length = connection.send((msg + termination_symbol).encode("utf-8").encode("hex"))
+    print "SENDING: " + msg
+    connection.send((msg + termination_symbol).encode("utf-8").encode("hex"))
 
 def message(data="", action="", error=""):
     return json.dumps({"data": data, "action": action, "error": error})

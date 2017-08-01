@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 import telegram
 import json
-
-with open("./server/secure_conf.json", "r") as conf_file:
-     bot = telegram.Bot(token=json.load(conf_file)["token"])
+from src.global_objs import bot
 
 updates_buffer = []
 last_update_id = 0
 
 
 def update_buffer():
+    global last_update_id
+    global updates_buffer
 
     try:
-        new_updates = bot.get_updates(offset=last_update_id + 1)
+        new_updates = bot.get_updates()  # offset=last_update_id + 1)
     except telegram.error.TimedOut:
         new_updates = []
 
@@ -25,6 +25,6 @@ def update_buffer():
 
 def get_next_update(old_update_id):
     for update in updates_buffer:
-        if update.update_id == old_update_id + 1:
+        if update.update_id > old_update_id:
             return update
     return None
