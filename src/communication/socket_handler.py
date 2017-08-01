@@ -114,23 +114,18 @@ class client(object):
 
 
 def recv_long(connection):
-    print "STARTED RECIVING"
     finished = False
     data = ""
-    regex_pattern = "0*\\" + termination_symbol + "$"
     while not finished:
-        print "NOT FINISHED"
-        data = data + connection.recv(max_size_websocket)
-        print "GOT RAW DATA: " + data
-        if re.search(regex_pattern, data) is not None:
-            data = re.sub(regex_pattern, "", data)
+        data = data + connection.recv(2).decode("hex")
+        if termination_symbol in data:
+            data = data.replace(termination_symbol, "")
             finished = True
 
-    print "FINISHED RECIEVING: " + data
+    data = data.encode("utf-8")
     return json.loads(data)
 
 def send_long(msg, connection):
-    print "SEND: " + msg
     data = json.loads(msg)
     assert "action" in data.keys()
     assert "error" in data.keys()
@@ -138,15 +133,7 @@ def send_long(msg, connection):
 
     # sends the message base 64 encoded to limit the possible characters
     # followed by the termination_symbol wich is no symbol of the base 64
-    print "RAW DATA SENT: " + msg
-    length = connection.send(msg)
-    overhang = length % max_size_websocket
-    print "BYTE LENGHT: " + str(length)
-    print "BYTE OVERHANG: " + str(overhang)
-    print "AMOUNT OF ZEROS: " + str(max_size_websocket - overhang - 1)
-    if overhang != 0:
-        connection.send(("0" * (max_size_websocket - overhang - 1)) + termination_symbol)
-    print "FINISHED SENDING"
+    length = connection.send((msg + termination_symbol).encode("utf-8").encode("hex"))
 
 def message(data="", action="", error=""):
     return json.dumps({"data": data, "action": action, "error": error})

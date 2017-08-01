@@ -25,8 +25,6 @@ def respond(msg, connection):
         if msg["data"].isdigit():
             pass
             #TODO What now?
-        print connection
-        print connections_state
         new_update = telegram_handler.get_next_update(old_update_id=connections_state[connection]["last_update_id"])
         if new_update is not None:
             socket_handler.send_long(new_update.to_json(), connection)
