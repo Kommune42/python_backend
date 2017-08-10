@@ -9,6 +9,11 @@ import helper
 import busses
 
 
+def log_to_file():
+    pass
+
+
+
 def log_message(msg):
     #log format: time type message
 

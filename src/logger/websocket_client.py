@@ -20,4 +20,3 @@ def get_update():
         test = telegram.Update.de_json(json.loads(returned_msg["data"]), global_objs.bot)
         print type(test)
         return test
-    return "WHAT"

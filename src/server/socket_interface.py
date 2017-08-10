@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from lib.communication import socket_handler
-import telegram_handler
+import buffer_management
 
 with open("./conf/telegram_server/server_conf.json", "r") as conf_file:
     conf = json.load(conf_file)
@@ -22,10 +22,8 @@ def respond(msg, identifier):
         connections_state[identifier] = {"last_update_id": 0}
         return socket_handler.message(action="ok")
     if msg["action"] == "get_update":
-        if msg["data"].isdigit():
-            pass
-            #TODO What now?
-        new_update = telegram_handler.get_next_update(old_update_id=connections_state[identifier]["last_update_id"])
+        #TODO What is update is not present
+        new_update = buffer_management.get_by_id(old_update_id=connections_state[identifier]["last_update_id"])
         print "UPDATE: " + str(new_update)
         if new_update is not None:
             connections_state[identifier]["last_update_id"] = new_update.update_id

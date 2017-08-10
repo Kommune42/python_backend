@@ -2,6 +2,7 @@
 *.pyo
 .rclint
 conf/secure_conf.json
+src/server/hard_buffer/*
 log.log
 msg_log.txt
 conf.conf
